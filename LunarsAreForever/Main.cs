@@ -4,30 +4,17 @@ using RoR2;
 namespace LunarsAreForever
 {
     // Metadata
-    [BepInPlugin("Samuel17.LunarsAreForever", "LunarsAreForever", "1.0.0")]
+    [BepInPlugin("Samuel17.LunarsAreForever", "LunarsAreForever", "1.0.1")]
 
     public class Main : BaseUnityPlugin
     {
-        public static ItemTier highlanderTier;
-
         public void Awake()
         {
             // Logging!
             Log.Init(Logger);
 
             // Mod logic
-            ItemTierCatalog.availability.CallWhenAvailable(HighlanderTierFix);
             ItemCatalog.availability.CallWhenAvailable(NoTemporaryLunars);
-        }
-
-        private void HighlanderTierFix()
-        {
-            ItemTierDef highlanderTierDef = ItemTierCatalog.FindTierDef("Highlander");
-            if (highlanderTierDef)
-            {
-                highlanderTier = highlanderTierDef.tier;
-                On.RoR2.Util.RollTemporaryItemFromItemIndex += RollTemporaryItemFromItemIndex;
-            }
         }
 
         private void NoTemporaryLunars()
@@ -40,17 +27,6 @@ namespace LunarsAreForever
                     Log.Message("Removed CanBeTemporary tag from " + itemDef.nameToken + ".");
                 }
             }
-        }
-
-        private ItemIndex RollTemporaryItemFromItemIndex(On.RoR2.Util.orig_RollTemporaryItemFromItemIndex orig, ItemIndex itemIndex)
-        {
-            ItemDef itemDef = ItemCatalog.GetItemDef(itemIndex);
-            if (itemDef && itemDef.tier == highlanderTier)
-            {
-                return ItemIndex.None;
-            }
-            
-            return orig(itemIndex);
         }
     }
 }
